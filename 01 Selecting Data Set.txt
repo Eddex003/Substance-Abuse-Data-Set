@@ -1,0 +1,12 @@
+Note the data set that you have selected.
+
+National Survey of Substance Abuse Treatment Services.
+
+Write your research questions (primary and secondary question)
+
+Primary: WHat is the percentage of youth that uses substances ranging from Middle School(10-11) to High School(17-18).
+Secondary: What is the perecantage of youth that use substances to battle mental illnesses.
+
+Provide a link to your Github repository.
+
+
