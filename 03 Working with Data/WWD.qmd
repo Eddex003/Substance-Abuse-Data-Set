@@ -1,0 +1,50 @@
+---
+title: "WWD"
+format: html
+---
+
+```{r}
+library(tidyverse)
+library(descr)
+library(knitr)
+library(dplyr)
+```
+
+```{r}
+# Define file path
+file_path <- file.path("..", "data", "data.rda")
+# Load the .rda file in a dataframe (.rda)
+df<-load(file_path)
+# View the first few rows
+df <- da04256.0001
+remove(da04256.0001)
+head(df)
+
+```
+
+```{r}
+colnames(df)
+```
+
+```{r}
+summary(df)
+```
+
+```{r}
+glimpse(df)
+```
+
+```{r}
+# FOCUS frequency table
+freq(as.ordered(df$FOCUS), plot = FALSE)
+```
+
+```{r}
+# Assessment Mental Health frequency table
+freq(as.ordered(df$SRVC2), plot = FALSE)
+```
+
+```{r}
+# Therapy Individual frequency table
+freq(as.ordered(df$SRVC6), plot = FALSE)
+```
