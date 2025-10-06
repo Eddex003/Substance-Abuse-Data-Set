@@ -1,0 +1,58 @@
+---
+title: "workingWithData"
+format: html
+---
+
+```{r}
+library(tidyverse)
+library(descr)
+library(knitr)
+library(dplyr)
+```
+
+```{r}
+# Define file path
+file_path <- file.path("..", "data", "data.rda")
+# Load the .rda file in a dataframe (.rda)
+df<-load(file_path)
+# View the first few rows
+df <- da04256.0001
+remove(da04256.0001)
+head(df)
+
+```
+
+```{r}
+colnames(df)
+```
+
+```{r}
+summary(df)
+```
+
+```{r}
+glimpse(df)
+```
+
+```{r}
+#| label: Focus Table
+# FOCUS frequency table
+# The Focus frequency table was added because I needed the percentage of the study that dealt with "substance abuse treatment services" and "mix of mental health and suibstaance abuse".
+# With this I can know this is the right study to work with.
+freq(as.ordered(df$FOCUS), plot = FALSE)
+```
+
+```{r}
+#| label: Mental Health Table
+# Assessment Mental Health frequency table
+# The assessment mental health table was added because I needed the percantge of people that were assessed to have mental health. 
+# Since the focus of this project is the mix of mental health with substance abuse, this was mandatory.
+freq(as.ordered(df$SRVC2), plot = FALSE)
+```
+
+```{r}
+#| label:  Therapy Table
+# Therapy Individual frequency table
+# The Therapy table was to see the perecentage of people that actually got therapy in the study.
+freq(as.ordered(df$SRVC6), plot = FALSE)
+```
