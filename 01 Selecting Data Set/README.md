@@ -1,1 +1,19 @@
-Waiting
+Note the data set that you have selected.
+
+Write your research questions (primary and secondary question)
+
+Primary: WHat is the percentage of youth that uses substances ranging from Middle School(10-11) to High School(17-18).
+Secondary: What is the perecantage of youth that use substances to battle mental illnesses.
+
+Provide a link to your Github repository.
+
+
+After some thought and discussion, the data set that I am interested in is substacce abuse. The study from 
+ICPSR, National Survey of Substance Abuse Treatment Services.(https://www.icpsr.umich.edu/web/ICPSR/studies/4256#), provides information 
+on age groups and percentages that uses substances.
+
+One question I am focusing on are what are the percentages of youth ranging from middle school(10-11) to high school(17-18) are abusing substances.
+Another is what is the percentage of youth that abuse substances are using them to battle mental illness. I figured that they both go hand in hand with eachother.
+
+I cannot add the source codebook just yet due to distrubution of information but the github link is provided below.
+Github: https://github.com/Eddex003/Substance-Abuse-Data-Set
