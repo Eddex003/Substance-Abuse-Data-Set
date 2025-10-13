@@ -56,3 +56,9 @@ freq(as.ordered(df$SRVC2), plot = FALSE)
 # The Therapy table was to see the perecentage of people that actually got therapy in the study.
 freq(as.ordered(df$SRVC6), plot = FALSE)
 ```
+
+```{r}
+df$FOCUS[df$FOCUS == NA] <- NA
+df$SRVC2[df$SRVC2 == NA] <- NA 
+df$SRVC6[df$SRVC6 == NA] <- NA
+```
