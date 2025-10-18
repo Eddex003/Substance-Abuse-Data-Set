@@ -10,6 +10,8 @@ library(knitr)
 library(dplyr)
 library(PDSCE)
 library(PDShiny)
+library(Hmisc)
+library(psych)
 ```
 
 ```{r}
@@ -60,63 +62,89 @@ freq(as.ordered(df$SRVC6), plot = FALSE)
 ```
 
 ```{r}
-#describe(df)
-#title_of_data_set$VAR1[title_of_data_set$VAR1 == 9] <- NA
-df$OTHNONTX[df$OTHNONTX == NA] <- NA
-df$DETOX[df$DETOX == NA] <- NA 
-df$TREATMT[df$TREATMT== NA] <- NA
+describe(df)
 ```
 
 ```{r}
-#title_of_data_set$VAR1[is.na(title_of_data_set$VAR1)] <- 0
-df$OTHNONTX[is.na(df$OTHNONTX)] <- 0
-df$DETOX[is.na(df$DETOX)] <- 0
-df$TREATMT[is.na(df$TREATMT)] <- 0
+#Version 1
+# This block filters if the focus(FOCUS) is 'Mix of mental health and substance abuse', if there was an assement for mental health(SRCV2), and if there was therapy given(SRCV6).
+DF <- tibble::as_tibble(df) %>%
+  filter(FOCUS == 3 & SRVC2 == 1 & SRVC6 == 1)
+
+myfix <- function(x) {
+  ifelse(x == 1, 1,
+         ifelse(x == 3, 3, NA))
+}
+
+# Applies myfix to each colum in DF
+DF2 <- as.data.frame(apply(DF, 2, myfix))
+
+#Sums across each row
+DF2$MHA <- apply(DF2, 1, sum, na.rm = TRUE)
+
+
+my_df <- tibble::as_tibble(df) %>% 
+  filter(FOCUS == 3 & SRVC2 == 1 & SRVC6 == 1) %>% 
+  select(FOCUS, SRVC2, SRVC6)
+table(df$FOCUS, df$SRVC2, df$SRVC6)
+
+
+my_df <- data.frame(my_df, MHA = DF2$MHA)
+my_df <- tibble::as_tibble(my_df)
+
+
+
+dim(my_df)
 ```
 
 ```{r}
-'''
-> library(PDS)
+#Version 2
+# Step 1: Filter the data
+DF <- tibble::as_tibble(df) %>%
+  filter(FOCUS == 1 & SRVC2 == 1 & SRVC6 == 1)
 
-> NESARC$HS_DEGREE <- factor(ifelse(NESARC$S1Q6A %in% c("1", "2", "3", "4", "5", "6", "7"), "No", "Yes"))
+# Step 2: Apply myfix only to selected columns (excluding FOCUS, SRVC2, SRVC6)
+DF2 <- DF %>%
+  select(-FOCUS, -SRVC2, -SRVC6) %>%
+  mutate(across(everything(), ~ ifelse(.x == 1, 1, NA)))
 
-> summary(NESARC$HS_DEGREE)
+# Step 3: Calculate MHA score
+DF2$MHA <- apply(DF2, 1, sum, na.rm = TRUE)
 
-   No   Yes
+# Step 4: Combine with original filtered columns
+my_df <- DF %>% select(FOCUS, SRVC2, SRVC6)
+my_df$MHA <- DF2$MHA
 
- 7849 35244
-'''
-library(PDSCE)
-df$OTHNONTX <- factor(ifelse(df$OTHNONTX %in% c("No", "Yes")))
-summary(df$OTHNONTX)
-```
+# Step 5: Check dimensions
+dim(my_df)
 
-```{r}
-'''
-> NESARC$DepressLife <- factor(ifelse( (NESARC$MAJORDEPLIFE == 1 | NESARC$DYSLIFE == 1), "Yes", "No"))
-
-> summary(NESARC$DepressLife)
-
-   No   Yes
-
-34894  8199
-'''
-NESARC$DETOX <- factor(ifelse( (df$DETOX == 1 | df$TREATMT== 1), "Yes", "No"))
-summary(df$DETOX)
-```
-
-```{r}
-'''
-> nd_sum <- title_of_data_set$nd_symptom1 + title_of_data_set$nd_symptom2 + title_of_data_set$nd_symptom3
-
-> title_of_data_set$nd_sum <- nd_sum
-'''
 
 ```
 
 ```{r}
-'''
-> levels(title_of_data_set$VARIABLE) <- c("value", "value")
-'''
+#Version 3
+# Step 1: Filter the data
+DF <- tibble::as_tibble(df) %>%
+  filter(FOCUS == 3 & SRVC2 == 1 & SRVC6 == 1)
 
+# Step 2: Apply myfix only to selected columns (excluding FOCUS, SRVC2, SRVC6)
+DF2 <- DF %>%
+  select(-FOCUS, -SRVC2, -SRVC6) %>%
+  mutate(across(everything(), ~ ifelse(.x == 1, 1, ifelse(.x == 3, 3, NA))))
+
+# Step 3: Calculate MHA score
+DF2$MHA <- apply(DF2, 1, sum, na.rm = TRUE)
+
+# Step 4: Combine with original filtered columns
+my_df <- DF %>% select(FOCUS, SRVC2, SRVC6)
+table(df$FOCUS, df$SRVC2, df$SRVC6)
+my_df$MHA <- DF2$MHA
+
+# Step 5: Check dimensions
+dim(my_df)
+```
+
+```{r}
+# For removing test data sets
+rm()
 ```
