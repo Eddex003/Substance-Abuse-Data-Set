@@ -8,8 +8,6 @@ library(tidyverse)
 library(descr)
 library(knitr)
 library(dplyr)
-library(PDSCE)
-library(PDShiny)
 library(Hmisc)
 library(psych)
 ```
@@ -66,8 +64,10 @@ describe(df)
 ```
 
 ```{r}
+#| label: 04 Data Management Code
 #Version 1
 # This block filters if the focus(FOCUS) is 'Mix of mental health and substance abuse', if there was an assement for mental health(SRCV2), and if there was therapy given(SRCV6).
+# Step 1: Filter rows
 DF <- tibble::as_tibble(df) %>%
   filter(FOCUS == 3 & SRVC2 == 1 & SRVC6 == 1)
 
@@ -86,19 +86,20 @@ DF2$MHA <- apply(DF2, 1, sum, na.rm = TRUE)
 my_df <- tibble::as_tibble(df) %>% 
   filter(FOCUS == 3 & SRVC2 == 1 & SRVC6 == 1) %>% 
   select(FOCUS, SRVC2, SRVC6)
-table(df$FOCUS, df$SRVC2, df$SRVC6)
+#table(df$FOCUS, df$SRVC2, df$SRVC6)
 
 
 my_df <- data.frame(my_df, MHA = DF2$MHA)
 my_df <- tibble::as_tibble(my_df)
 
 
-
 dim(my_df)
 ```
 
 ```{r}
+#| label: 04 Data Management Code
 #Version 2
+#MHA is mental health assessment
 # Step 1: Filter the data
 DF <- tibble::as_tibble(df) %>%
   filter(FOCUS == 1 & SRVC2 == 1 & SRVC6 == 1)
@@ -117,11 +118,10 @@ my_df$MHA <- DF2$MHA
 
 # Step 5: Check dimensions
 dim(my_df)
-
-
 ```
 
 ```{r}
+#| label: 04 Data Management Code
 #Version 3
 # Step 1: Filter the data
 DF <- tibble::as_tibble(df) %>%
@@ -137,7 +137,7 @@ DF2$MHA <- apply(DF2, 1, sum, na.rm = TRUE)
 
 # Step 4: Combine with original filtered columns
 my_df <- DF %>% select(FOCUS, SRVC2, SRVC6)
-table(df$FOCUS, df$SRVC2, df$SRVC6)
+#table(df$FOCUS, df$SRVC2, df$SRVC6)
 my_df$MHA <- DF2$MHA
 
 # Step 5: Check dimensions
@@ -145,6 +145,15 @@ dim(my_df)
 ```
 
 ```{r}
+#| label: Filtering Practice
+filtered <- df %>%
+  select(FOCUS, SRVC2, SRVC6)
+
+#print(filtered)
+```
+
+```{r}
+#| label: Removing Dataset Chunk
 # For removing test data sets
 rm()
 ```
