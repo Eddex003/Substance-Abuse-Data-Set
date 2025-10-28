@@ -64,96 +64,24 @@ describe(df)
 ```
 
 ```{r}
-#| label: 04 Data Management Code
-#Version 1
-# This block filters if the focus(FOCUS) is 'Mix of mental health and substance abuse', if there was an assement for mental health(SRCV2), and if there was therapy given(SRCV6).
-# Step 1: Filter rows
-DF <- tibble::as_tibble(df) %>%
-  filter(FOCUS == 3 & SRVC2 == 1 & SRVC6 == 1)
-
-myfix <- function(x) {
-  ifelse(x == 1, 1,
-         ifelse(x == 3, 3, NA))
-}
-
-# Applies myfix to each colum in DF
-DF2 <- as.data.frame(apply(DF, 2, myfix))
-
-#Sums across each row
-DF2$MHA <- apply(DF2, 1, sum, na.rm = TRUE)
-
-
-my_df <- tibble::as_tibble(df) %>% 
-  filter(FOCUS == 3 & SRVC2 == 1 & SRVC6 == 1) %>% 
-  select(FOCUS, SRVC2, SRVC6)
-#table(df$FOCUS, df$SRVC2, df$SRVC6)
-
-
-my_df <- data.frame(my_df, MHA = DF2$MHA)
-my_df <- tibble::as_tibble(my_df)
-
-
-dim(my_df)
-```
-
-```{r}
-#| label: 04 Data Management Code
-#Version 2
-#MHA is mental health assessment
-# Step 1: Filter the data
-DF <- tibble::as_tibble(df) %>%
-  filter(FOCUS == 1 & SRVC2 == 1 & SRVC6 == 1)
-
-# Step 2: Apply myfix only to selected columns (excluding FOCUS, SRVC2, SRVC6)
-DF2 <- DF %>%
-  select(-FOCUS, -SRVC2, -SRVC6) %>%
-  mutate(across(everything(), ~ ifelse(.x == 1, 1, NA)))
-
-# Step 3: Calculate MHA score
-DF2$MHA <- apply(DF2, 1, sum, na.rm = TRUE)
-
-# Step 4: Combine with original filtered columns
-my_df <- DF %>% select(FOCUS, SRVC2, SRVC6)
-my_df$MHA <- DF2$MHA
-
-# Step 5: Check dimensions
-dim(my_df)
-```
-
-```{r}
-#| label: 04 Data Management Code
-#Version 3
-# Step 1: Filter the data
-DF <- tibble::as_tibble(df) %>%
-  filter(FOCUS == 3 & SRVC2 == 1 & SRVC6 == 1)
-
-# Step 2: Apply myfix only to selected columns (excluding FOCUS, SRVC2, SRVC6)
-DF2 <- DF %>%
-  select(-FOCUS, -SRVC2, -SRVC6) %>%
-  mutate(across(everything(), ~ ifelse(.x == 1, 1, ifelse(.x == 3, 3, NA))))
-
-# Step 3: Calculate MHA score
-DF2$MHA <- apply(DF2, 1, sum, na.rm = TRUE)
-
-# Step 4: Combine with original filtered columns
-my_df <- DF %>% select(FOCUS, SRVC2, SRVC6)
-#table(df$FOCUS, df$SRVC2, df$SRVC6)
-my_df$MHA <- DF2$MHA
-
-# Step 5: Check dimensions
-dim(my_df)
-```
-
-```{r}
-#| label: Filtering Practice
+#| label: 04 Data Management
 filtered <- df %>%
   select(FOCUS, SRVC2, SRVC6)
 
-#print(filtered)
+print(filtered)
 ```
 
 ```{r}
 #| label: Removing Dataset Chunk
 # For removing test data sets
 rm()
+```
+
+```{r}
+#| label: 05 Univariate
+
+```
+
+```{r}
+
 ```
