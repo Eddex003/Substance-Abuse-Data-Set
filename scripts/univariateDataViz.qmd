@@ -1,0 +1,77 @@
+---
+title: "univariateDataViz"
+format: html
+---
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(papaja)
+library(knitr)
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+knitr::purl("workingWithData.qmd", output = "workingWithData.R")
+source("workingWithData.R")
+```
+
+![](images/clipboard-9133593.png)
+
+```{r}
+#view(df)
+```
+
+```{r}
+df %>%
+  ggplot(aes(x = OWNERSHP)) +
+  geom_bar(fill = "grey40") +
+  ggtitle("Organization Type") +
+  scale_x_discrete(
+    labels = function(x) str_wrap(x, width = 18),
+    guide  = guide_axis(n.dodge = 2)
+  ) +
+  labs(
+    x = "Organzation Type",
+    y = "Number of Counts",
+    caption = "This graph shows the count of what types of organizations there are in the dataframe."   
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    axis.text.x = element_text(margin = margin(t = 6)),
+    plot.caption.position = "plot",                 
+    plot.caption = element_text(
+      hjust = 0, size = 9, margin = margin(t = 8)  
+    ),
+    plot.margin = margin(10, 10, 30, 10)           
+  )
+```
+
+```{r}
+df %>%
+  ggplot(aes(x = FOCUS)) +
+  geom_bar(fill = "grey40") +
+  ggtitle("Focus of Study") +
+  scale_x_discrete(
+    labels = function(x) str_wrap(x, width = 18),
+    guide  = guide_axis(n.dodge = 2)
+  ) +
+  labs(
+    x = "Focus",
+    y = "Number of Counts",
+    caption = "This graph shows the count of which foucs of study the facilites used in the dataframe."
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    axis.text.x = element_text(margin = margin(t = 6)),
+    plot.caption.position = "plot",                 
+    plot.caption = element_text(
+      hjust = 0, size = 9, margin = margin(t = 8)  
+    ),
+    plot.margin = margin(10, 10, 30, 10)           
+  )
+```

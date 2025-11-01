@@ -1,0 +1,86 @@
+---
+title: "bivariateDataViz"
+format: html
+---
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(papaja)
+library(knitr)
+library(stringr)
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+knitr::purl("workingWithData.qmd", output = "workingWithData.R")
+source("workingWithData.R")
+```
+
+```{r}
+#view(df)
+```
+
+```{r}
+#| message: false
+#| warning: false
+# | fig-width: 12
+# | fig-height: 5
+# | out-width: 100%
+# | fig-dpi: 300
+ggplot(df, aes(x = FOCUS, y = OWNERSHP)) +
+  geom_jitter(width = 0.25, height = 0.12, size = 2, alpha = 0.7) +
+  ggtitle("Focus × Type of Organization") +
+  xlab("Focus") + ylab("Type of Organization") +
+  scale_x_discrete(
+    labels = function(x) str_wrap(x, width = 20),   
+    guide  = guide_axis(n.dodge = 2)
+  ) +
+  scale_y_discrete(labels = function(x) str_wrap(x, width = 24)) +
+  coord_cartesian(clip = "off") +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title  = element_text(face = "bold"),
+    # pull labels closer to the panel
+    axis.text.x  = element_text(margin = margin(t = 2)),
+    axis.title.x = element_text(margin = margin(t = 4)),
+    plot.margin = margin(10, 16, 12, 10)
+  )
+```
+
+This graph shows the relation between the focus of study and type of organization facility were. Since they are categorical values, they are noticeably spaced out and in big clutters.
+
+```{r}
+#| message: false
+#| warning: false
+# | fig-width: 12
+# | fig-height: 5
+# | out-width: 100%
+# | fig-dpi: 300
+df$REGION <- factor(df$REGION)
+ggplot(df, aes(x = FOCUS, y = OWNERSHP, color = REGION)) +
+  geom_jitter(width = 0.25, height = 0.12, size = 2, alpha = 0.7) +
+  ggtitle("Focus × Type of Organization x Region") +
+  xlab("Focus of Study") +                      
+  ylab("Type of Organization") +                
+  scale_x_discrete(
+    labels = function(x) str_wrap(x, width = 20),
+    guide  = guide_axis(n.dodge = 2)
+  ) +
+  scale_y_discrete(labels = function(x) str_wrap(x, width = 24)) +
+  scale_color_brewer(palette = "Dark2", name = "Region") +  
+  coord_cartesian(clip = "off") +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title   = element_text(face = "bold"),
+    axis.text.x  = element_text(margin = margin(t = 2)),
+    axis.title.x = element_text(margin = margin(t = 4)),
+    legend.position = "right",
+    plot.margin = margin(10, 16, 12, 10)
+  ) +
+  guides(color = guide_legend(override.aes = list(alpha = 1, size = 3)))
+```
+
+This graph shows the relation between the focus of study and type of organization facility were. Since they are categorical values, they are noticeably spaced out and in big clutters. What variable is added in this is REGION. THis is to see if the region has any affect on the what focus of study and type of organization the facility is.
