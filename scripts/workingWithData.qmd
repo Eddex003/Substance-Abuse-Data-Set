@@ -65,23 +65,15 @@ describe(df)
 
 ```{r}
 #| label: 04 Data Management
+#| Filtering out the information I actually want to use instead of having to srcoll through a full dataset.
 filtered <- df %>%
-  select(FOCUS, SRVC2, SRVC6)
+  select(CASEID, REGION, FOCUS, OWNERSHP, SRVC2, SRVC6, O_AGE1, O_AGE1F)
 
-print(filtered)
+head(filtered)
 ```
 
 ```{r}
 #| label: Removing Dataset Chunk
-# For removing test data sets
+# For removing unwanted data sets
 rm()
-```
-
-```{r}
-#| label: 05 Univariate
-
-```
-
-```{r}
-
 ```
