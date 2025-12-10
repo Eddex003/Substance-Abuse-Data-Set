@@ -21,7 +21,6 @@ df<-load(file_path)
 df <- da04256.0001
 remove(da04256.0001)
 head(df)
-
 ```
 
 ```{r}
@@ -65,9 +64,11 @@ describe(df)
 
 ```{r}
 #| label: 04 Data Management
-#| Filtering out the information I actually want to use instead of having to srcoll through a full dataset.
+vars <- c("CASEID","REGION","FOCUS","OWNERSHP","SRVC2","SRVC6",
+          "T_CLIOP", "H_AGE1", "O_AGE1","T_CLIJUV", "T_CLIHI","B_PCT","A_PCT","D_PCT","TOTADMIS")
+
 filtered <- df %>%
-  select(CASEID, REGION, FOCUS, OWNERSHP, SRVC2, SRVC6, O_AGE1, O_AGE1F)
+  dplyr::select(tidyselect::any_of(vars)) 
 
 head(filtered)
 ```
@@ -76,4 +77,23 @@ head(filtered)
 #| label: Removing Dataset Chunk
 # For removing unwanted data sets
 rm()
+```
+
+```{r}
+#| label: Checking what kind of varibale it is.
+#1) What is its type?
+class(df$D_PCT)          # "factor"means categorical
+                          # "numeric" means numeric
+
+#2) Is it a factor already?,
+is.factor(df$O_AGE1)
+
+#3) How many distinct values does it take?,
+length(unique(df$O_AGE1))
+#or, with dplyr:,
+dplyr::n_distinct(df$O_AGE1)
+
+#4) See the categories and their counts,
+table(df$O_AGE1, useNA = "ifany")
+
 ```

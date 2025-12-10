@@ -1,0 +1,220 @@
+---
+title: "chi-squared"
+format: 
+  pdf: 
+    number-sections: true 
+    toc: true            
+    pdf-engine: xelatex 
+editor: visual
+---
+
+```{r libraries, include=FALSE}
+#| label: Library
+library(tidyverse)
+library(lsr)
+library(knitr)
+library(gapminder)
+library(dplyr)
+library(forcats)
+```
+
+## Step 1: Load Your Data
+
+```{r load_data, eval=TRUE, echo=TRUE}
+# We have used code like this
+file_path <- file.path("..", "data", "data.rda")
+# Load the .rda file in a dataframe (.rda)
+df<-load(file_path)
+df <- da04256.0001
+remove(da04256.0001)
+# View the first few rows
+head(df)
+```
+
+## Step 2: Summarize Your Categorical Variable
+
+```{r freq_table, eval=FALSE, echo=TRUE}
+# Replace 'your_column' with the name of your categorical column
+table(df$FOCUS)
+```
+
+```{r run_gapminder_prepare, echo=TRUE, eval=TRUE}
+# Ensure FOCUS is categorical and optionally sort levels by frequency
+gapminder_sample <- df %>%
+  mutate(FOCUS = factor(FOCUS)) %>%
+  count(FOCUS, name = "Unweighted Frequency") %>%
+  arrange(desc(`Unweighted Frequency`)) %>%
+  mutate(`%` = round(100 * `Unweighted Frequency` / sum(`Unweighted Frequency`), 1))
+
+table_data <- rbind(
+  "Unweighted Frequency" = gapminder_sample$`Unweighted Frequency`,
+  "%"                    = gapminder_sample$`%`
+)
+colnames(table_data) <- as.character(gapminder_sample$FOCUS)
+
+table_data
+
+```
+
+## Step 3: Check Assumptions
+
+```{r assumptions, eval=FALSE, echo=TRUE}
+# Use expected frequencies to check your data
+chisq.test(table(df$FOCUS))$expected
+```
+
+```{r run_gapminder_assumptions, echo=TRUE, eval=TRUE}
+chisq_test_result <- chisq.test(table_data)
+chisq_test_result$expected
+any(chisq_test_result$expected < 5)
+```
+
+```{r run_gapminder_assumptions2, echo=TRUE, eval=TRUE}
+# Drop any rows that are less than 5 for example
+
+#gapminder_sample <- gapminder_sample %>%
+#  filter(FOCUS != "Other")
+```
+
+Not really needed as the \<5 is the % and not the actual amount of the value 'Other'.
+
+## Step 4: Run the Chi-Squared Goodness-of-Fit Test
+
+```{r run_gof, eval=FALSE, echo=TRUE}
+# For equal probabilities
+chisq.test(table(df$FOCUS))
+```
+
+```{r run_custom_gof, eval=FALSE, echo=TRUE}
+# With custom probabilities (e.g., 0.3, 0.3, 0.2, 0.2)
+chisq.test(table(df$FOCUS), p = c(0.62, 0.26, 0.10, 0.01, 0.01))
+```
+
+Make it to where p = c() is equal to 1 following proportional percentage in the real gapminder_sample.
+
+```{r run_gapminder_test, echo=TRUE, eval=TRUE}
+# We saved this object in Step 3: Check Assumptions
+# chisq_test_result <- chisq.test(table_data)
+chisq_test_result
+```
+
+## Step 5: Visualize the Distribution
+
+```{r plot_bar, echo=TRUE, eval=FALSE}
+# Observed visualization example
+ggplot(df, aes(x = FOCUS)) +
+  geom_bar() +
+  labs(title = "Observed Focuses", x = "Focus", y = "Count")
+```
+
+Visualizations help us interpret the relationship between categorical variables. It does not help that the categorical variable values are too long in which they overlap each other.
+
+A fancier visualization:
+
+```{r calculate-proportions, echo=TRUE, eval=TRUE, fig.height=5}
+df %>%
+  mutate(FOCUS = forcats::fct_infreq(factor(trimws(FOCUS)))) %>%
+  ggplot(aes(x = FOCUS)) +
+  geom_bar(fill = "#2C7FB8") +
+  geom_text(stat = "count", aes(label = after_stat(count)), vjust = -0.4) +
+  labs(title = "Observed Focuses", x = "Focus", y = "Count") +
+  scale_x_discrete(
+    labels = function(x) str_wrap(x, width = 20),
+    guide  = guide_axis(n.dodge = 2)               
+  ) +
+  theme_minimal()
+
+```
+
+## Step 6: Interpret the Results
+
+```{r hidden-variables, include=FALSE}
+# Chi-squared value
+chisq_value <- chisq_test_result$statistic
+
+# Degrees of freedom
+df <- chisq_test_result$parameter
+
+# p-value
+p_val <- chisq_test_result$p.value
+```
+
+```{r view_gapminder_test, echo=TRUE, eval=TRUE}
+chisq_test_result
+```
+
+## Analyze Your Own Data
+
+Reload data. I now realize I was supposed to do just this part of the tutorial. It was interesting learning more about the chi-squared test though.
+
+```{r eval=TRUE, echo=TRUE}
+# We have used code like this
+file_path <- file.path("..", "data", "data.rda")
+# Load the .rda file in a dataframe (.rda)
+df<-load(file_path)
+df <- da04256.0001
+remove(da04256.0001)
+# View the first few rows
+head(df)
+```
+
+```{r student_practice, eval=FALSE, echo=TRUE}
+# Replace the placeholder with your real column name
+chisq.test(table(df$FOCUS))
+```
+
+## Optional: Chi-Squared Goodness-of-Fit
+
+You have one categorical variable, and you want to test whether its observed frequencies match some expected distribution. You don’t need a 2D table — just a vector of counts.
+
+```{r test_of_independence_template, eval=FALSE, echo=TRUE}
+# Chi-Squared Goodness-of-Fit Test
+# Use this when you have ONE categorical variable 
+# and want to test expected proportions
+
+# Get observed counts
+observed <- table(df$FOCUS)
+
+# Define expected proportions (must add up to 1)
+# Example: equal proportions across 3 categories
+expected <- rep(1/length(observed), length(observed))
+
+# Run the test
+chisq.test(x = observed, p = expected)
+```
+
+Suppose you have observed the values from gapminder_sample:
+
+```{r gof-table, echo=TRUE, eval=TRUE}
+table(gapminder_sample$FOCUS)
+```
+
+Let’s say you expect the values to be equally represented (uniform distribution). Then you'd do:
+
+```{r gof-test, echo=TRUE, eval=TRUE}
+# equal proportions
+observed <- table(gapminder_sample$FOCUS) 
+expected <- rep(1/length(observed), length(observed))
+
+chisq.test(x = observed, p = expected) 
+```
+
+This tests: “Do the observed continent frequencies differ significantly from what we'd expect if they were equally likely?”
+
+## Summary
+
+You now know how to:
+
+-   Describe and check assumptions of chi-squared tests
+
+-   Run both types of chi-squared tests in R
+
+-   Interpret and report the results clearly
+
+Always remember:
+
+-   Assumptions matter!
+
+-   Use visuals to support your stats
+
+-   Explain your results clearly

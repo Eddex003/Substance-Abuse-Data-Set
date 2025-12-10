@@ -11,6 +11,7 @@ library(knitr)
 ```
 
 ```{r}
+#| label: Loading Data
 #| echo: false
 #| message: false
 #| warning: false

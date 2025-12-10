@@ -83,4 +83,4 @@ ggplot(df, aes(x = FOCUS, y = OWNERSHP, color = REGION)) +
   guides(color = guide_legend(override.aes = list(alpha = 1, size = 3)))
 ```
 
-This graph shows the relation between the focus of study and type of organization facility were. Since they are categorical values, they are noticeably spaced out and in big clutters. What variable is added in this is REGION. THis is to see if the region has any affect on the what focus of study and type of organization the facility is.
+This graph shows the relation between the focus of study and type of organization facility were. Since they are categorical values, they are noticeably spaced out and in big clutters. What variable is added in this is REGION. This is to see if the region has any affect on the what focus of study and type of organization the facility is.

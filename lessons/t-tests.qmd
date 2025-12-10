@@ -1,0 +1,163 @@
+---
+title: "t-tests"
+format: 
+  pdf: 
+    number-sections: true 
+    toc: true            
+    pdf-engine: xelatex 
+editor: visual
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libraries, include=FALSE}
+#| label: Library
+library(tidyr)
+library(ggplot2)
+library(dplyr)
+library(effsize)
+```
+
+```{r load_data, eval=TRUE, echo=TRUE}
+# We have used code like this
+file_path <- file.path("..", "data", "data.rda")
+# Load the .rda file in a dataframe (.rda)
+df<-load(file_path)
+df <- da04256.0001
+remove(da04256.0001)
+# View the first few rows
+head(df)
+```
+
+### **One-Sample *t*-Test**
+
+### When to Use This Test
+
+Use the one-sample *t*-test when you want to compare the mean of your sample to a known or hypothesized population value.
+
+**Example:** Suppose we know the national average exam score is 75, and we want to see if our class scores differently.
+
+### **Assumptions**
+
+-   You're testing **one group** against a **single value**.
+-   Data are **continuous** (interval/ratio scale) and approximately **normally distributed**.
+-   Observations are **independent**.
+
+### **Template Code**
+
+```{r}
+#| eval: false
+#| include: false
+# default is two-tailed
+t.test(data$variable, mu = 75) 
+
+# one-tailed
+t.test(data$variable, mu = 0, alternative = "greater")
+t.test(data$variable, mu = 0, alternative = "less")
+```
+
+### Example (Using my data frame and variable)
+
+```{r warning=FALSE}
+#data(df)
+t.test(df$O_AGE1, mu = 30)
+```
+
+```{r warning=FALSE}
+# Visualization
+ggplot(df, aes(x = O_AGE1)) +
+  geom_histogram(binwidth = 2, fill = "#69b3a2", alpha = 0.7, color = "white") +
+  geom_vline(xintercept = 8, linetype = "dashed", color = "red", size = 1.2) +
+  labs(
+    title = "Outpat'nt clients under 18 years old",
+    x = "Patients Under 18",
+    y = "Count"
+  ) +
+  theme_minimal()
+```
+
+### **Interpretation**
+
+-   In this test, since my numeric value wasn't continuous or approximately normally distributed,
+
+    the plot looks very vacant and doesn't give much info to use.
+
+------------------------------------------------------------------------
+
+## **Independent-Samples t-Test**
+
+### **When to Use This Test**
+
+Use the **independent-samples t-test** when comparing the means of **two [separate]{.underline} groups**.
+
+**Example:** Which bug spray is more effective, Group 1 or Group 2?
+
+### **Key Concepts**
+
+-   Groups must be **independent** (different participants in each group).
+-   Assumes that the data is **normally distributed** and that the two groups have **similar variances**.
+-   If variances aren’t similar, use **Welch’s t-test** (the default in R).
+
+### Template Code
+
+``` r
+t.test(score ~ group, data = my_data)
+```
+
+-   Use `var.equal = TRUE` if you’re assuming equal variances.
+-   R will automatically do Welch’s t-test if variances differ.
+
+### Example
+
+```{r}
+age_grouped <- df %>%
+  mutate(
+    group = case_when(
+      dplyr::between(O_AGE1, 1, 319)   ~ "Group1",
+      dplyr::between(O_AGE1, 320, 640) ~ "Group2",
+      TRUE ~ NA_character_
+    )
+  )
+```
+
+```{r}
+# Visualization
+ggplot(age_grouped, aes(x = group, y = CASEID, fill = group)) +
+  geom_boxplot(alpha = 0.7) +
+  labs(
+    title = "Distribution by Group",
+    x = "Group",
+    y = "Value"
+  ) +
+
+  theme_minimal()
+
+# Possible outlier in Group 2
+```
+
+```{r}
+# Check variance
+var.test(CASEID ~ group, data = age_grouped)
+# Significant => therefore, use Welsh's
+```
+
+```{r}
+# Independent t-test
+t.test(CASEID ~ group, data = age_grouped)
+```
+
+```{r}
+# Effect size
+cohen.d(CASEID ~ group, data = age_grouped)
+```
+
+### **Interpretation/Summary**
+
+-   The **p-value** tells you if the group means differ significantly.
+-   Report the **effect size** (**Cohen’s d**) to describe how big the difference is.
+-   "An independent-samples *t*-test was conducted to compare \[insect counts\] between \[spray groups\]. There was a \[significant/not significant\] difference in insect counts between Group1 (*M* = X̄₁) and Group2 (*M* = X̄₂); *t*(df) = t-value, *p* = p-value."
+-   In the Visualization section, I had to include NA as well since they were many NAs in the data frame.
+-   Could not do Paired-Samples t-test as there point in the data frame when comparing **two [related]{.underline} measurements**—like before/after scores from the same people.
+-   Independent-Samples T-Test was the best to use for my variables chosen.

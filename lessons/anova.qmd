@@ -1,0 +1,114 @@
+---
+title: "anova"
+format: 
+  pdf: 
+    number-sections: true 
+    toc: true            
+    pdf-engine: xelatex 
+editor: visual
+---
+
+## ANOVAs
+
+### Introduction to ANOVA
+
+In statistics, when we want to compare **more than two group means**, we use **Analysis of Variance (ANOVA)**. While a t-test can compare two groups, running multiple t-tests inflates the Type I error rate. ANOVA allows us to test all groups simultaneously while controlling for error.
+
+-   **ANOVA compares the variance *between groups* to the variance *within groups*.**
+
+-   We use the **F-ratio** to evaluate whether observed group differences are larger than we'd expect due to random chance.
+
+#### Hypotheses for a One-Way ANOVA:
+
+-   **Null hypothesis (H₀):** All group means are equal.\
+    μ1​=μ2​=μ3
+
+-   **Alternative hypothesis (H₁):** At least one group mean is different.\
+    (Not all μs are equal, but doesn't specify which ones.)
+
+This sets the stage for using statistical modeling to determine whether group membership explains a meaningful portion of the variability in the outcome.
+
+### Descriptive Statistics and Visuals
+
+Before running ANOVA, it’s important to **explore the data**.
+
+***Descriptive Tools***
+
+-   xtabs(): Cross-tabulation to check how many observations are in each group.
+
+-   aggregate(): Calculates group means (or other summaries like SD).
+
+-   plotmeans() from the gplots package: Plots means with confidence intervals.
+
+## Setup
+
+```{r libraries, include=FALSE}
+library(gplots)
+library(sciplot)
+library(car)
+library(lsr)
+```
+
+```{r load_data, eval=TRUE, echo=TRUE}
+file_path <- file.path("..", "data", "data.rda")
+df<-load(file_path)
+df <- da04256.0001
+remove(da04256.0001)
+```
+
+I will be examining the different focuses that facilities were doing when they received patients on drug abuse.
+
+## Descriptives
+
+```{r example-describe-ANOVA}
+# Check number of cases in each group
+xtabs(~FOCUS, data = df)
+```
+
+```{r}
+# Calculate group means
+aggregate(TOTADMIS ~ FOCUS, data = df, mean)
+```
+
+```{r}
+#| warning: false
+# Plot means with confidence intervals
+plotmeans(TOTADMIS ~ FOCUS, data = df)
+```
+
+## ANOVA
+
+### Create the model
+
+```{r example-ANOVA-calculations}
+# Run the one-way ANOVA
+model <- aov(TOTADMIS ~ FOCUS, data = df)
+```
+
+### Assumptions
+
+```{r}
+leveneTest(TOTADMIS ~ FOCUS, data = df)
+```
+
+```{r}
+#sample size must be between 3 and 5000; I can't run this in my case.
+#shapiro.test(residuals(model))
+```
+
+```{r}
+# Summary of ANOVA table
+summary(model)
+```
+
+```{r}
+# Calculate eta squared effect size
+etaSquared(model)
+```
+
+### Post-Hoc Anaylsis
+
+```{r}
+# Post-hoc comparisons (pairwise t-tests)
+posthocPairwiseT(model)
+```
